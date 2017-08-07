@@ -1,4 +1,4 @@
-package ranger
+package snitch
 
 import (
 	"io"
@@ -10,16 +10,18 @@ import (
 )
 
 type Reader struct {
-	posFile  string
-	done     chan struct{}
-	noFollow bool
-	tail     *tail.Tail
+	posFile    string
+	done       chan struct{}
+	noFollow   bool
+	mustExists bool
+	tail       *tail.Tail
 }
 
-func New(f string, nf bool, positionFile string) (*Reader, error) {
+func New(f string, nf, me bool, positionFile string) (*Reader, error) {
 	r := &Reader{
-		done:     make(chan struct{}),
-		noFollow: nf,
+		done:       make(chan struct{}),
+		noFollow:   nf,
+		mustExists: me,
 	}
 
 	if positionFile != "" {
@@ -46,7 +48,7 @@ func (r *Reader) Close() error {
 func (r *Reader) openTail(f string) error {
 	config := tail.Config{
 		ReOpen:    true,
-		MustExist: true,
+		MustExist: r.mustExists,
 		Follow:    !r.noFollow,
 	}
 

@@ -1,0 +1,58 @@
+{
+	"ImportPath": "github.com/xjewer/snitch",
+	"GoVersion": "go1.8",
+	"GodepVersion": "v79",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/hpcloud/tail",
+			"Comment": "v1.0.0-19-ga927b68",
+			"Rev": "a927b6857fc77f4823ab37102e948be667b92bd8"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/tail/ratelimiter",
+			"Comment": "v1.0.0-19-ga927b68",
+			"Rev": "a927b6857fc77f4823ab37102e948be667b92bd8"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/tail/util",
+			"Comment": "v1.0.0-19-ga927b68",
+			"Rev": "a927b6857fc77f4823ab37102e948be667b92bd8"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/tail/watch",
+			"Comment": "v1.0.0-19-ga927b68",
+			"Rev": "a927b6857fc77f4823ab37102e948be667b92bd8"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/tail/winfile",
+			"Comment": "v1.0.0-19-ga927b68",
+			"Rev": "a927b6857fc77f4823ab37102e948be667b92bd8"
+		},
+		{
+			"ImportPath": "github.com/quipo/statsd",
+			"Comment": "v.1.3.0-2-geaafca5",
+			"Rev": "eaafca512970e346bd4a4d223c8db72856885d35"
+		},
+		{
+			"ImportPath": "github.com/quipo/statsd/event",
+			"Comment": "v.1.3.0-2-geaafca5",
+			"Rev": "eaafca512970e346bd4a4d223c8db72856885d35"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "8f0908ab3b2457e2e15403d3697c9ef5cb4b57a9"
+		},
+		{
+			"ImportPath": "gopkg.in/fsnotify.v1",
+			"Comment": "v1.4.2",
+			"Rev": "629574ca2a5df945712d3079857300b5e4da0236"
+		},
+		{
+			"ImportPath": "gopkg.in/tomb.v1",
+			"Rev": "dd632973f1e7218eb1089048e0798ec9ae7dceb8"
+		}
+	]
+}

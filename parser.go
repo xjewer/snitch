@@ -1,8 +1,8 @@
-package ranger
+package snitch
 
 import (
 	"github.com/quipo/statsd"
-	"github.com/xjewer/ranger/lib/stats"
+	"github.com/xjewer/snitch/lib/stats"
 )
 
 type template interface{}
@@ -25,11 +25,7 @@ func (p *handler) HandleLine(s string) error {
 
 	t := l.GetType()
 
-	stats.SendEvent(p.s, "All", t)
-
-	if !l.IsOk() {
-		stats.SendEvent(p.s, "Error", t)
-	}
+	stats.SendEvent(p.s, l.GetStatusHttpStatusCode(), t)
 
 	timing, err := l.GetTiming()
 	if err != nil {

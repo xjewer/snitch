@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,13 +11,14 @@ import (
 )
 
 const (
-	//TestLine = "[$time_local] $status $upstream_addr $upstream_status $upstream_response_time $scheme $request_method $request_uri $uri $request_completion $host"
-	TestLine = "[%s]	200	192.168.100.39:9000	200	0.036	https	POST	/vkadmin/queues_data/	/vkadmin/queues_data/	OK	topface.com"
+	TestLineOk    = "[%s]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname"
+	TestLineError = "[%s]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname"
 )
 
 var (
-	file = flag.String("file", "", "logs file name")
-	done = make(chan struct{})
+	file   = flag.String("file", "", "logs file name")
+	events = flag.Int("events", 1, "event per second")
+	done   = make(chan struct{})
 )
 
 func main() {
@@ -41,14 +43,13 @@ func writeToFile() error {
 	}
 	defer f.Close()
 
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(time.Second / time.Duration(*events))
 	ticker2 := time.NewTicker(time.Minute)
 
 	for {
 		select {
 		case <-ticker.C:
-			//RFC1123Z    = "Mon, 02 Jan 2006 15:04:05 -0700"
-			fmt.Fprintf(f, TestLine+"\n", time.Now().Format("02/Jan/2006:15:04:05 -0700"))
+			getLogLine(f)
 		case <-ticker2.C:
 			// truncate file every minute
 			f.Truncate(0)
@@ -60,4 +61,12 @@ func writeToFile() error {
 	}
 
 	return nil
+}
+
+func getLogLine(f *os.File) {
+	if rand.Intn(2) == 0 {
+		fmt.Fprintf(f, TestLineOk+"\n", time.Now().Format("02/Jan/2006:15:04:05 -0700"))
+	} else {
+		fmt.Fprintf(f, TestLineError+"\n", time.Now().Format("02/Jan/2006:15:04:05 -0700"))
+	}
 }
