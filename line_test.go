@@ -11,10 +11,9 @@ const (
 
 func BenchmarkNewLine(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		tl := TestLineError
-		l := NewLine(tl, "\t")
-		l.GetStatusHttpStatusCode()
-		l.GetTiming()
-		l.GetType()
+		tl := NewLine(TestLineError, nil)
+		tl.Split("\t")
+		tl.GetEntry(1)
+		tl.GetEntry(5)
 	}
 }

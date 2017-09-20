@@ -27,6 +27,6 @@ func SendTiming(s statsd.Statsd, key string, t int64) {
 }
 
 // SendEvent writes event types
-func SendEvent(s statsd.Statsd, key, eventType string) {
-	s.Incr(fmt.Sprintf("count.%s.%s", key, eventType), 1)
+func SendEvent(s statsd.Statsd, key string) {
+	s.Incr(fmt.Sprintf("count.%s", key), 1)
 }

@@ -1,0 +1,27 @@
+---
+sources:
+- source: test2 log
+  file: ./test/log/test2.log
+  noFollow: false
+  mustExists: false
+  reOpen: true
+  prefix: "%HOST%"
+  delimiter: "\t"
+  keys:
+    - key: All.$3.$6
+      count: true
+      timing: $4
+      delimiter: " : "
+#- source: test1 log
+#  file: ./test/log/test1.log
+#  noFollow: false
+#  mustExists: true
+#  offset: ""
+#  template: ""
+#  prefix: "%HOST%"
+#  keys:
+#    - key: All.$request_type.$status_code
+#      count: true
+#      timing: $request_time
+#    - key: $request_type.$status_code
+#      count: true

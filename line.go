@@ -1,40 +1,42 @@
 package snitch
 
 import (
-	"strconv"
+	"errors"
 	"strings"
 )
 
-type line struct {
+var (
+	ErrInvalidSyntax = errors.New("invalid syntax")
+	ErrOutboundIndex = errors.New("outbound index")
+)
+
+// Line is a log line structure
+type Line struct {
+	text    string
+	err     error
 	entries []string
 }
 
-func NewLine(l string, separator string) line {
-	return line{entries: strings.Split(l, separator)}
+// NewLine makes new text structure
+func NewLine(t string, err error) *Line {
+	return &Line{
+		text: t,
+		err:  err,
+	}
 }
 
-func (l *line) GetStatusHttpStatusCode() string {
-	return getFirstMatch(l.entries[3])
+func (l *Line) Split(sep string) {
+	l.entries = strings.Split(l.text, sep)
 }
 
-func (l *line) GetTiming() (int64, error) {
-	f, err := strconv.ParseFloat(getFirstMatch(l.entries[4]), 32)
-	if err != nil {
-		return 0, err
+func (l *Line) GetEntries() []string {
+	return l.entries
+}
+
+func (l *Line) GetEntry(i int) (string, error) {
+	if i >= len(l.entries) {
+		return "", ErrOutboundIndex
 	}
 
-	return int64(1000 * f), nil
-}
-
-func (l *line) GetType() string {
-	return l.entries[6]
-}
-
-func getFirstMatch(s string) string {
-	index := strings.Index(s, ":")
-	if index >= 0 {
-		return s[:index-1]
-	}
-
-	return s
+	return l.entries[i], nil
 }
