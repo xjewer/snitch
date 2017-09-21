@@ -1,6 +1,7 @@
 package snitch
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -16,4 +17,28 @@ func BenchmarkNewLine(b *testing.B) {
 		tl.GetEntry(1)
 		tl.GetEntry(5)
 	}
+}
+
+func TestNewLine(t *testing.T) {
+	a := assert.New(t)
+	tl := NewLine(TestLineOk, nil)
+	tl.Split("\t")
+	result, err := tl.GetEntry(1)
+	a.Equal(result, "200")
+	a.Nil(err)
+}
+
+func TestNewLineError(t *testing.T) {
+	a := assert.New(t)
+	tl := NewLine(TestLineOk, nil)
+	tl.Split("\t")
+	_, err := tl.GetEntry(20000)
+	a.Equal(err, ErrOutboundIndex)
+}
+
+func TestNewLineError2(t *testing.T) {
+	a := assert.New(t)
+	tl := NewLine(TestLineOk, nil)
+	_, err := tl.GetEntry(1)
+	a.Equal(err, ErrOutboundIndex)
 }
