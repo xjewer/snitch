@@ -1,15 +1,15 @@
 package snitch
 
 import (
-	"log"
-	"errors"
-	"strings"
 	"bytes"
+	"errors"
+	"log"
 	"strconv"
+	"strings"
 
 	"github.com/quipo/statsd"
-	"github.com/xjewer/snitch/lib/stats"
 	"github.com/xjewer/snitch/lib/config"
+	"github.com/xjewer/snitch/lib/stats"
 	"gopkg.in/tomb.v1"
 )
 
@@ -50,7 +50,7 @@ func NewParser(r LogReader, s statsd.Statsd, cfg config.Source) (Parser, error) 
 func (h *handler) handleLine(l *Line) error {
 	l.Split(h.cfg.Delimiter)
 	for _, m := range h.metrics {
-		key, err := h.MakeKeyFromPaths(l, m)
+		key, err := makeKeyFromPaths(l, m)
 		if err != nil {
 			return err
 		}
@@ -59,10 +59,9 @@ func (h *handler) handleLine(l *Line) error {
 		}
 
 		if m.timing {
-			f, err := h.GetElementAmount(l, m.timingData, m.delimiter)
-			if err != nil {
-				log.Println(err)
-				continue
+			f, err := getElementAmount(l, m.timingData, m.delimiter)
+			if err != nil && err != ErrEmptyString {
+				return err
 			}
 
 			// statsd wants milliseconds
@@ -97,17 +96,18 @@ func (h *handler) Run() {
 			err := h.handleLine(l)
 			if err != nil {
 				log.Println(err)
+				continue
 			}
 		case <-h.Dying():
-			log.Printf("Closing %q ...", h.cfg.Name)
+			log.Printf("Closing %q ...\n", h.cfg.Name)
 			return
 		}
 	}
 }
 
-// MakeKeyFromPaths makes statsd key from keyPath
+// makeKeyFromPaths makes statsd key from keyPath
 // key path sets the order and type of each sequences
-func (h *handler) MakeKeyFromPaths(l *Line, m *metric) (string, error) {
+func makeKeyFromPaths(l *Line, m *metric) (string, error) {
 	//todo use sync.Pool
 	var buffer bytes.Buffer
 	for i, k := range m.path {
@@ -115,7 +115,7 @@ func (h *handler) MakeKeyFromPaths(l *Line, m *metric) (string, error) {
 			buffer.WriteString(".")
 		}
 		if k.isVar {
-			m, err := h.GetElementString(l, k.match, m.delimiter, true)
+			m, err := getElementString(l, k.match, m.delimiter, true)
 			if err != nil {
 				return "", err
 			}
@@ -128,9 +128,9 @@ func (h *handler) MakeKeyFromPaths(l *Line, m *metric) (string, error) {
 	return buffer.String(), nil
 }
 
-// GetElementString returns specific entry from entries, id last value pass,
+// getElementString returns specific entry from entries, id last value pass,
 // it returns the last from chain of ", "
-func (h *handler) GetElementString(l *Line, i int, sep string, last bool) (string, error) {
+func getElementString(l *Line, i int, sep string, last bool) (string, error) {
 	c, err := l.GetEntry(i)
 	if err != nil {
 		return "", err
@@ -143,8 +143,8 @@ func (h *handler) GetElementString(l *Line, i int, sep string, last bool) (strin
 	return c, nil
 }
 
-// GetElementAmount returns amount of values from specific entry
-func (h *handler) GetElementAmount(l *Line, i int, sep string) (float32, error) {
+// getElementAmount returns amount of values from specific entry
+func getElementAmount(l *Line, i int, sep string) (float32, error) {
 	c, err := l.GetEntry(i)
 	if err != nil {
 		return 0.0, err
@@ -167,7 +167,7 @@ func getLastMatch(s string, sep string) string {
 func getAmount(s string, sep string) (float32, error) {
 	var result float32
 	if s == "-" {
-		return result, ErrInvalidSyntax
+		return result, ErrEmptyString
 	}
 
 	columns := strings.Split(s, sep)

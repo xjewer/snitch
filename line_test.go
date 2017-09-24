@@ -19,26 +19,34 @@ func BenchmarkNewLine(b *testing.B) {
 	}
 }
 
-func TestNewLine(t *testing.T) {
+func TestGetEntries(t *testing.T) {
+	a := assert.New(t)
+	tl := NewLine(TestLineOk, nil)
+	tl.Split("\t")
+	result := tl.GetEntries()
+	a.Equal(11, len(result))
+}
+
+func TestGetEntry(t *testing.T) {
 	a := assert.New(t)
 	tl := NewLine(TestLineOk, nil)
 	tl.Split("\t")
 	result, err := tl.GetEntry(1)
-	a.Equal(result, "200")
+	a.Equal("200", result)
 	a.Nil(err)
 }
 
-func TestNewLineError(t *testing.T) {
+func TestGetEntryError(t *testing.T) {
 	a := assert.New(t)
 	tl := NewLine(TestLineOk, nil)
 	tl.Split("\t")
 	_, err := tl.GetEntry(20000)
-	a.Equal(err, ErrOutboundIndex)
+	a.Equal(ErrOutboundIndex, err)
 }
 
-func TestNewLineError2(t *testing.T) {
+func TestGetEntryError2(t *testing.T) {
 	a := assert.New(t)
 	tl := NewLine(TestLineOk, nil)
 	_, err := tl.GetEntry(1)
-	a.Equal(err, ErrOutboundIndex)
+	a.Equal(ErrOutboundIndex, err)
 }

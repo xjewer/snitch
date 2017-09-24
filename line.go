@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	ErrInvalidSyntax = errors.New("invalid syntax")
+	ErrEmptyString   = errors.New("empty string")
 	ErrOutboundIndex = errors.New("outbound index")
 )
 

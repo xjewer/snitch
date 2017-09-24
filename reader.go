@@ -3,9 +3,9 @@ package snitch
 import (
 	"io"
 	"io/ioutil"
-	"strconv"
-	"os"
 	"log"
+	"os"
+	"strconv"
 
 	"github.com/hpcloud/tail"
 	"github.com/xjewer/snitch/lib/config"
@@ -86,7 +86,7 @@ func (r *fileReader) GetLines(lines chan<- *Line) {
 		select {
 		case l, ok := <-r.tail.Lines:
 			if !ok {
-				log.Println("not ok")
+				log.Println("channel with lines has closed")
 				return
 			}
 
@@ -97,9 +97,6 @@ func (r *fileReader) GetLines(lines chan<- *Line) {
 			}
 
 			lines <- NewLine(l.Text, l.Err)
-		//case <-r.tail.Dying():
-		//	log.Println("exit from get lines")
-		//	return
 		}
 	}
 }
