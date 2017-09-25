@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/hpcloud/tail"
 	"github.com/xjewer/snitch/lib/config"
@@ -65,7 +66,10 @@ func (r *fileReader) openFile(f string) error {
 	}
 
 	if r.source.OffsetFile != "" {
-		offset, _ := r.getPosition()
+		offset, err := r.getPosition()
+		if err != nil {
+			return err
+		}
 		c.Location = &tail.SeekInfo{Offset: offset, Whence: io.SeekStart}
 	} else {
 		c.Location = &tail.SeekInfo{Offset: 0, Whence: io.SeekEnd}
@@ -95,8 +99,9 @@ func (r *fileReader) GetLines(lines chan<- *Line) {
 				log.Println("empty line")
 				continue
 			}
-
 			lines <- NewLine(l.Text, l.Err)
+		case <-r.tail.Dead():
+			return
 		}
 	}
 }
@@ -107,6 +112,7 @@ func (r *fileReader) savePosition() error {
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 
 	offset, err := r.tail.Tell()
 	if err != nil {
@@ -114,7 +120,6 @@ func (r *fileReader) savePosition() error {
 	}
 
 	f.WriteString(strconv.Itoa(int(offset)))
-	f.Close()
 	return nil
 }
 
@@ -129,5 +134,5 @@ func (r *fileReader) getPosition() (int64, error) {
 		return 0, nil
 	}
 
-	return strconv.ParseInt(string(b), 10, 0)
+	return strconv.ParseInt(strings.Trim(string(b), "\n"), 10, 0)
 }
