@@ -9,15 +9,15 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/xjewer/snitch"
-	"github.com/xjewer/snitch/lib/stats"
-	"github.com/xjewer/snitch/lib/config"
 	"github.com/quipo/statsd"
+	"github.com/xjewer/snitch"
+	"github.com/xjewer/snitch/lib/config"
+	"github.com/xjewer/snitch/lib/stats"
 )
 
 var (
-	wg      = sync.WaitGroup{}
-	parsers = make([]snitch.Parser, 0)
+	wg         = sync.WaitGroup{}
+	processors = make([]*snitch.Processor, 0)
 
 	cfg            = flag.String("config", config.DefaultConfigPath, "config file name")
 	statsdEndpoint = flag.String("statsd", "", "statsd endpoint")
@@ -45,7 +45,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	runReaders(c, s)
+	runProcessors(c, s)
 
 	cs := make(chan os.Signal, 1)
 	signals := []os.Signal{os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGPIPE}
@@ -53,34 +53,38 @@ func main() {
 	for {
 		sig := <-cs
 		fmt.Printf("Got %q signal\n", sig)
-		closeParsers()
+		closeProcessors()
 		break
 	}
 
 	wg.Wait()
 }
 
-func runReaders(c *config.Data, s statsd.Statsd) {
+// runProcessors run all processors
+func runProcessors(c *config.Data, s statsd.Statsd) {
 	for _, source := range c.Sources {
-		r, err := snitch.NewFileReader(source)
+		reader, err := snitch.NewFileReader(source)
 		if err != nil {
 			log.Println(err)
 			continue
 		}
 
-		p, err := snitch.NewParser(r, s, source)
+		parser, err := snitch.NewParser(reader, s, source)
 		if err != nil {
 			log.Println(err)
 			continue
 		}
-		parsers = append(parsers, p)
+
+		p := snitch.NewProcessor(parser, reader)
+		processors = append(processors, p)
 		go p.Run()
 	}
-	wg.Add(len(parsers))
+	wg.Add(len(processors))
 }
 
-func closeParsers() {
-	for _, p := range parsers {
+// closeProcessors closes all established processors
+func closeProcessors() {
+	for _, p := range processors {
 		err := p.Close()
 		if err != nil {
 			log.Println(err)

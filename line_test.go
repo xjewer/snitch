@@ -10,15 +10,6 @@ const (
 	TestLineError = "[%s]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname"
 )
 
-func BenchmarkNewLine(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		tl := NewLine(TestLineError, nil)
-		tl.Split("\t")
-		tl.GetEntry(1)
-		tl.GetEntry(5)
-	}
-}
-
 func TestGetEntries(t *testing.T) {
 	a := assert.New(t)
 	tl := NewLine(TestLineOk, nil)
@@ -38,7 +29,7 @@ func TestGetEntry(t *testing.T) {
 
 func TestGetEntryError(t *testing.T) {
 	a := assert.New(t)
-	tl := NewLine(TestLineOk, nil)
+	tl := NewLine(TestLineError, nil)
 	tl.Split("\t")
 	_, err := tl.GetEntry(20000)
 	a.Equal(ErrOutboundIndex, err)

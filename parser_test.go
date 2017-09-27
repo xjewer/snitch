@@ -3,7 +3,6 @@ package snitch
 import (
 	"fmt"
 	"strconv"
-	"sync"
 	"testing"
 
 	"github.com/quipo/statsd"
@@ -117,32 +116,6 @@ func Test_GetElementAmount(t *testing.T) {
 	a.Equal(ErrOutboundIndex, err)
 }
 
-func Test_Run(t *testing.T) {
-	var wg sync.WaitGroup
-	a := assert.New(t)
-	lines := make(chan *Line, 0)
-	reader := NewNoopReader(lines)
-
-	cfg := config.Source{
-		Name: "test",
-	}
-
-	p, err := NewParser(reader, statsd.NoopClient{}, cfg)
-	a.Nil(err)
-
-	wg.Add(1)
-	go func() {
-		p.Run()
-		wg.Done()
-	}()
-
-	lines <- NewLine("test", nil)
-	a.Nil(p.Close())
-	a.Equal(0, len(lines))
-	wg.Wait()
-	close(lines)
-}
-
 func Test_HandleLine(t *testing.T) {
 	type testCase struct {
 		str string
@@ -184,7 +157,7 @@ func Test_HandleLine(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			a := assert.New(t)
-			err := h.handleLine(NewLine(tc.str, nil))
+			err := h.HandleLine(NewLine(tc.str, nil))
 			if tc.err != nil {
 				a.EqualError(tc.err, err.Error())
 			} else {
@@ -227,7 +200,7 @@ func Test_HandleLineError(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			a := assert.New(t)
-			err := h.handleLine(NewLine(tc.str, nil))
+			err := h.HandleLine(NewLine(tc.str, nil))
 			if tc.err != nil {
 				a.EqualError(tc.err, err.Error())
 			} else {

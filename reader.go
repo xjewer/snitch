@@ -10,11 +10,17 @@ import (
 
 	"github.com/hpcloud/tail"
 	"github.com/xjewer/snitch/lib/config"
+	"errors"
+)
+
+var (
+	ErrReaderIsFinished = errors.New("reader is finished")
 )
 
 type LogReader interface {
 	Close() error
 	GetLines(chan<- *Line)
+	GetName() string
 }
 
 // fileReaders allows to read lines from file
@@ -44,20 +50,27 @@ func NewFileReader(source config.Source) (LogReader, error) {
 	return r, nil
 }
 
+// GetName returns reader name
+func (r *fileReader) GetName() string {
+	return r.source.Name
+}
+
+// CLose closes log reader
 func (r *fileReader) Close() error {
 	if r.offsetFile != "" {
 		r.savePosition()
 	}
 	r.tail.Cleanup()
-	r.tail.Kill(tail.ErrStop)
+	r.tail.Kill(ErrReaderIsFinished)
 	err := r.tail.Wait()
-	if err != tail.ErrStop {
+	if err != ErrReaderIsFinished {
 		return err
 	}
 
 	return nil
 }
 
+// openFile opens log file to read its lines
 func (r *fileReader) openFile(f string) error {
 	c := tail.Config{
 		ReOpen:    r.source.ReOpen,
@@ -100,7 +113,8 @@ func (r *fileReader) GetLines(lines chan<- *Line) {
 				continue
 			}
 			lines <- NewLine(l.Text, l.Err)
-		case <-r.tail.Dead():
+		case <-r.tail.Dying():
+			log.Println("dying")
 			return
 		}
 	}

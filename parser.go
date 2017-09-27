@@ -3,29 +3,25 @@ package snitch
 import (
 	"bytes"
 	"errors"
-	"log"
 	"strconv"
 	"strings"
 
 	"github.com/quipo/statsd"
 	"github.com/xjewer/snitch/lib/config"
 	"github.com/xjewer/snitch/lib/stats"
-	"gopkg.in/tomb.v1"
 )
 
 var (
-	ErrParserClose  = errors.New("parser close")
-	ErrEmptyVarName = errors.New("empty var name")
+	ErrProcessorStopped = errors.New("processor is stopped")
+	ErrEmptyVarName     = errors.New("empty var name")
 )
 
 // Parser parses log text from reader and sends statistics
 type Parser interface {
-	Run()
-	Close() error
+	HandleLine(*Line) error
 }
 
 type handler struct {
-	tomb.Tomb
 	reader  LogReader
 	statsd  statsd.Statsd
 	metrics []*metric
@@ -47,7 +43,7 @@ func NewParser(r LogReader, s statsd.Statsd, cfg config.Source) (Parser, error) 
 }
 
 // handleLine handles log text and sends statistics to statsd
-func (h *handler) handleLine(l *Line) error {
+func (h *handler) HandleLine(l *Line) error {
 	l.Split(h.cfg.Delimiter)
 	for _, m := range h.metrics {
 		key, err := makeKeyFromPaths(l, m)
@@ -70,39 +66,6 @@ func (h *handler) handleLine(l *Line) error {
 	}
 
 	return nil
-}
-
-// Close reader and channels
-func (h *handler) Close() error {
-	h.Kill(ErrParserClose)
-	h.Wait()
-	return h.reader.Close()
-}
-
-// Run runs handler getting readers's log lines and parse them
-func (h *handler) Run() {
-	defer h.Done()
-	lines := make(chan *Line, 0)
-	defer close(lines)
-	go h.reader.GetLines(lines)
-	for {
-		select {
-		case l := <-lines:
-			if l.err != nil {
-				log.Println("got line error", l.err)
-				continue
-			}
-
-			err := h.handleLine(l)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
-		case <-h.Dying():
-			log.Printf("Closing %q ...\n", h.cfg.Name)
-			return
-		}
-	}
 }
 
 // makeKeyFromPaths makes statsd key from keyPath
