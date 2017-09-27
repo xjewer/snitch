@@ -4,13 +4,13 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/hpcloud/tail"
 	"github.com/xjewer/snitch/lib/config"
+	"github.com/xjewer/snitch/lib/simplelog"
 )
 
 var (
@@ -29,20 +29,22 @@ type LogReader interface {
 type fileReader struct {
 	offsetFile string
 	tail       *tail.Tail
-	source     config.Source
+	s          config.Source
+	l          simplelog.Logger
 }
 
 // NewFileReader returns log reader from files
-func NewFileReader(source config.Source) (LogReader, error) {
+func NewFileReader(s config.Source, l simplelog.Logger) (LogReader, error) {
 	r := &fileReader{
-		source: source,
+		s: s,
+		l: l,
 	}
 
-	if source.OffsetFile != "" {
-		r.offsetFile = source.OffsetFile
+	if s.OffsetFile != "" {
+		r.offsetFile = s.OffsetFile
 	}
 
-	err := r.openFile(source.File)
+	err := r.openFile(s.File)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +54,7 @@ func NewFileReader(source config.Source) (LogReader, error) {
 
 // GetName returns reader name
 func (r *fileReader) GetName() string {
-	return r.source.Name
+	return r.s.Name
 }
 
 // CLose closes log reader
@@ -70,15 +72,15 @@ func (r *fileReader) Close() error {
 	return nil
 }
 
-// openFile opens log file to read its lines
+// openFile opens simplelog file to read its lines
 func (r *fileReader) openFile(f string) error {
 	c := tail.Config{
-		ReOpen:    r.source.ReOpen,
-		MustExist: r.source.MustExists,
-		Follow:    !r.source.NoFollow,
+		ReOpen:    r.s.ReOpen,
+		MustExist: r.s.MustExists,
+		Follow:    !r.s.NoFollow,
 	}
 
-	if r.source.OffsetFile != "" {
+	if r.s.OffsetFile != "" {
 		offset, err := r.getPosition()
 		if err != nil {
 			return err
@@ -103,18 +105,18 @@ func (r *fileReader) GetLines(lines chan<- *Line) {
 		select {
 		case l, ok := <-r.tail.Lines:
 			if !ok {
-				log.Println("channel with lines has closed")
+				r.l.Println("channel with lines has closed")
 				return
 			}
 
 			if l == nil {
 				// empty line
-				log.Println("empty line")
+				r.l.Println("empty line")
 				continue
 			}
 			lines <- NewLine(l.Text, l.Err)
 		case <-r.tail.Dying():
-			log.Println("dying")
+			r.l.Println("dying")
 			return
 		}
 	}
@@ -139,7 +141,7 @@ func (r *fileReader) savePosition() error {
 
 // getPosition returns the last position of reading file
 func (r *fileReader) getPosition() (int64, error) {
-	b, err := ioutil.ReadFile(r.source.OffsetFile)
+	b, err := ioutil.ReadFile(r.s.OffsetFile)
 	if err != nil {
 		return 0, err
 	}

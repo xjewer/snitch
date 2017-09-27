@@ -2,7 +2,7 @@ version: "2"
 services:
   nginx:
     image: nginx
-    name: nginx-test
+    container_name: nginx-test
     volumes:
       - "./log:/var/log/nginx/"
       - "./test.conf:/etc/nginx/conf.d/test.conf:ro"

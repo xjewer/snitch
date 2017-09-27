@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/xjewer/snitch"
 	"github.com/xjewer/snitch/lib/config"
+	"github.com/xjewer/snitch/lib/simplelog"
 )
 
 func Test_ProcessorRun(t *testing.T) {
@@ -20,9 +21,10 @@ func Test_ProcessorRun(t *testing.T) {
 		Name: "test",
 	}
 
+	l := &simplelog.NoopLogger{}
 	parser, err := snitch.NewParser(reader, statsd.NoopClient{}, cfg)
 	a.Nil(err)
-	p := snitch.NewProcessor(parser, reader)
+	p := snitch.NewProcessor(parser, reader, l)
 
 	wg.Add(1)
 	go func() {

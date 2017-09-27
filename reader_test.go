@@ -1,7 +1,6 @@
 package snitch_test
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"sync"
@@ -10,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/xjewer/snitch"
 	"github.com/xjewer/snitch/lib/config"
+	"github.com/xjewer/snitch/lib/simplelog"
 )
 
 func Test_NewFileReaderWithZeroOffset(t *testing.T) {
@@ -60,11 +60,13 @@ func checkResults(a *assert.Assertions, strs []string, offsetFile string) {
 		MustExists: true,
 	}
 
-	reader, err := snitch.NewFileReader(cfg)
-	a.Nil(err)
+	l := &simplelog.NoopLogger{}
+	reader, err := snitch.NewFileReader(cfg, l)
+	if err != nil {
+		a.FailNow(err.Error())
+	}
 
 	lines := make(chan *snitch.Line)
-
 	wg.Add(1)
 	go func() {
 		reader.GetLines(lines)
@@ -76,7 +78,6 @@ func checkResults(a *assert.Assertions, strs []string, offsetFile string) {
 			select {
 			case l, ok := <-lines:
 				if !ok {
-					fmt.Println("not ok")
 					return
 				}
 				a.Equal(e, l.GetText(), "Strings should be equal")

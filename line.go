@@ -10,7 +10,7 @@ var (
 	ErrOutboundIndex = errors.New("outbound index")
 )
 
-// Line is a log line structure
+// Line is a simplelog line structure
 type Line struct {
 	text    string
 	err     error

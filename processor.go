@@ -1,9 +1,7 @@
 package snitch
 
 import (
-	"log"
-	"os"
-
+	"github.com/xjewer/snitch/lib/simplelog"
 	"gopkg.in/tomb.v1"
 )
 
@@ -12,15 +10,15 @@ type Processor struct {
 	tomb.Tomb
 	p Parser
 	r LogReader
-	l *log.Logger
+	l simplelog.Logger
 }
 
 // NewProcessor returns the New Processor
-func NewProcessor(p Parser, r LogReader) *Processor {
+func NewProcessor(p Parser, r LogReader, l simplelog.Logger) *Processor {
 	return &Processor{
 		p: p,
 		r: r,
-		l: log.New(os.Stderr, "", log.LstdFlags),
+		l: l,
 	}
 }
 
@@ -34,7 +32,7 @@ func (p *Processor) Close() error {
 	return p.Wait()
 }
 
-// Run runs handler getting readers's log lines and parse them
+// Run runs handler getting readers's simplelog lines and parse them
 func (p *Processor) Run() {
 	defer p.Done()
 	lines := make(chan *Line, 0)
@@ -50,7 +48,7 @@ func (p *Processor) Run() {
 
 			err := p.p.HandleLine(l)
 			if err != nil {
-				log.Println(err)
+				p.l.Println(err)
 				continue
 			}
 		case <-p.Dying():

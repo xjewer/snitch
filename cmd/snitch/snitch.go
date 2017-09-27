@@ -12,6 +12,7 @@ import (
 	"github.com/quipo/statsd"
 	"github.com/xjewer/snitch"
 	"github.com/xjewer/snitch/lib/config"
+	"github.com/xjewer/snitch/lib/simplelog"
 	"github.com/xjewer/snitch/lib/stats"
 )
 
@@ -21,31 +22,29 @@ var (
 
 	cfg            = flag.String("config", config.DefaultConfigPath, "config file name")
 	statsdEndpoint = flag.String("statsd", "", "statsd endpoint")
-	statsdPrefix   = flag.String("prefix", "balancer.%HOST%.", "statsd metrics prefix")
+	statsdPrefix   = flag.String("prefix", "", "statsd global metrics prefix")
 	buffer         = flag.Int("buffer", 0, "statsd buffer interval")
 )
 
 func main() {
 	flag.Parse()
 
+	l := log.New(os.Stderr, "", log.LstdFlags)
+
 	c, err := config.Parse(*cfg)
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal(err)
 	}
-
-	errOutput := os.Stderr
-	log.SetOutput(errOutput)
-	defer errOutput.Close()
 
 	s := stats.NewStatsd(*statsdEndpoint, *statsdPrefix, *buffer)
 	err = s.CreateSocket()
 	defer s.Close()
 
 	if err != nil {
-		log.Fatal(err)
+		l.Fatal(err)
 	}
 
-	runProcessors(c, s)
+	runProcessors(c, s, l)
 
 	cs := make(chan os.Signal, 1)
 	signals := []os.Signal{os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGPIPE}
@@ -53,7 +52,7 @@ func main() {
 	for {
 		sig := <-cs
 		fmt.Printf("Got %q signal\n", sig)
-		closeProcessors()
+		closeProcessors(l)
 		break
 	}
 
@@ -61,21 +60,21 @@ func main() {
 }
 
 // runProcessors run all processors
-func runProcessors(c *config.Data, s statsd.Statsd) {
+func runProcessors(c *config.Data, s statsd.Statsd, l simplelog.Logger) {
 	for _, source := range c.Sources {
-		reader, err := snitch.NewFileReader(source)
+		reader, err := snitch.NewFileReader(source, l)
 		if err != nil {
-			log.Println(err)
+			l.Println(err)
 			continue
 		}
 
 		parser, err := snitch.NewParser(reader, s, source)
 		if err != nil {
-			log.Println(err)
+			l.Println(err)
 			continue
 		}
 
-		p := snitch.NewProcessor(parser, reader)
+		p := snitch.NewProcessor(parser, reader, l)
 		processors = append(processors, p)
 		go p.Run()
 	}
@@ -83,11 +82,11 @@ func runProcessors(c *config.Data, s statsd.Statsd) {
 }
 
 // closeProcessors closes all established processors
-func closeProcessors() {
+func closeProcessors(l simplelog.Logger) {
 	for _, p := range processors {
 		err := p.Close()
 		if err != nil {
-			log.Println(err)
+			l.Println(err)
 		}
 
 		wg.Done()

@@ -13,7 +13,7 @@ import (
 	"github.com/quipo/statsd/event"
 )
 
-// Logger interface compatible with log.Logger
+// Logger interface compatible with simplelog.Logger
 type Logger interface {
 	Println(v ...interface{})
 }

@@ -1,11 +1,11 @@
 ---
 sources:
-- source: test2 log
-  file: ./test/log/test2.log
+- source: test2 simplelog
+  file: ./test/simplelog/test2.simplelog
   noFollow: false
   mustExists: false
   reOpen: true
-  prefix: "%HOST%"
+  prefix: "balancer.%HOST%"
   delimiter: "\t"
   keys:
     - key: All.$3.$6
