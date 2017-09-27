@@ -1,7 +1,7 @@
 ---
 sources:
-- source: test2 simplelog
-  file: ./test/simplelog/test2.simplelog
+- source: test2 log
+  file: ./test/log/test2.log
   noFollow: false
   mustExists: false
   reOpen: true

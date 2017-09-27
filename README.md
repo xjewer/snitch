@@ -2,7 +2,14 @@
 
 This tool allows to parse log files and send statistics to statsd endpoint
 
-### Configuration
+### Startup options
+
+* {string} `config` - configuration file
+* {string} `statsd` - statsd endpoint
+* {string} `prefix` - statsd global key prefix 
+* {int} `buffer` - buffer interval for metrics, `0` default: one metric - one request 
+
+### Configuration file
 
 Snith has a particular configuration structure in yml:
 
@@ -13,7 +20,7 @@ sources:
   noFollow: false
   mustExists: false
   reOpen: true
-  prefix: "%HOST%"
+  prefix: "balancer.%HOST%"
   delimiter: "\t"
   keys:
     - key: All.$3.$6
@@ -39,7 +46,7 @@ where is:
     * {string} `key` - statsd metric key, $N - means column position
     * {boolean} `count` - boolean, means  
     * {string} `timing` - column with time (time should be in seconds, like 0.001 - means 1ms)  
-    * {delimiter} `delimiter` - delimiter into the column, 
+    * {string} `delimiter` - delimiter into the column, 
             e.g. nginx can to write in one column a few values from upstream the request was in   
 
 

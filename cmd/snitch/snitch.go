@@ -20,10 +20,10 @@ var (
 	wg         = sync.WaitGroup{}
 	processors = make([]*snitch.Processor, 0)
 
-	cfg            = flag.String("config", config.DefaultConfigPath, "config file name")
-	statsdEndpoint = flag.String("statsd", "", "statsd endpoint")
-	statsdPrefix   = flag.String("prefix", "", "statsd global metrics prefix")
-	buffer         = flag.Int("buffer", 0, "statsd buffer interval")
+	cfg             = flag.String("config", config.DefaultConfigPath, "config file name")
+	statsdEndpoint  = flag.String("statsd", "", "statsd endpoint")
+	statsdKeyPrefix = flag.String("prefix", "test", "statsd global key prefix")
+	buffer          = flag.Int("buffer", 0, "statsd buffer interval")
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 		l.Fatal(err)
 	}
 
-	s := stats.NewStatsd(*statsdEndpoint, *statsdPrefix, *buffer)
+	s := stats.NewStatsd(*statsdEndpoint, *statsdKeyPrefix, *buffer)
 	err = s.CreateSocket()
 	defer s.Close()
 
