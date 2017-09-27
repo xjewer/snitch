@@ -1,4 +1,4 @@
-package snitch
+package snitch_test
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/quipo/statsd"
 	"github.com/stretchr/testify/assert"
+	"github.com/xjewer/snitch"
 	"github.com/xjewer/snitch/lib/config"
 )
 
@@ -27,7 +28,7 @@ func Test_GetAmount(t *testing.T) {
 		{
 			"-",
 			", ",
-			ErrEmptyString,
+			snitch.ErrEmptyString,
 			0,
 		},
 		{
@@ -53,7 +54,7 @@ func Test_GetAmount(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			a := assert.New(t)
-			result, err := getAmount(tc.str, tc.sep)
+			result, err := snitch.GetAmount(tc.str, tc.sep)
 			a.Equal(tc.expectation, result)
 			if tc.err != nil {
 				a.EqualError(tc.err, err.Error())
@@ -86,7 +87,7 @@ func Test_GetLastMatch(t *testing.T) {
 	for i, tc := range cases {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			a := assert.New(t)
-			result := getLastMatch(tc.str, tc.sep)
+			result := snitch.GetLastMatch(tc.str, tc.sep)
 			a.Equal(tc.expectation, result)
 		})
 	}
@@ -94,26 +95,26 @@ func Test_GetLastMatch(t *testing.T) {
 
 func Test_GetElementString(t *testing.T) {
 	a := assert.New(t)
-	l := NewLine("1,2,3", nil)
+	l := snitch.NewLine("1,2,3", nil)
 	l.Split(",")
-	str, err := getElementString(l, 2, ":", false)
+	str, err := snitch.GetElementString(l, 2, ":", false)
 	a.Nil(err)
 	a.Equal("3", str)
 
-	_, err = getElementString(l, 10, ":", false)
-	a.Equal(ErrOutboundIndex, err)
+	_, err = snitch.GetElementString(l, 10, ":", false)
+	a.Equal(snitch.ErrOutboundIndex, err)
 }
 
 func Test_GetElementAmount(t *testing.T) {
 	a := assert.New(t)
-	l := NewLine("1,2,3", nil)
+	l := snitch.NewLine("1,2,3", nil)
 	l.Split(",")
-	str, err := getElementAmount(l, 2, ":")
+	str, err := snitch.GetElementAmount(l, 2, ":")
 	a.Nil(err)
 	a.Equal(float32(3), str)
 
-	_, err = getElementAmount(l, 10, ":")
-	a.Equal(ErrOutboundIndex, err)
+	_, err = snitch.GetElementAmount(l, 10, ":")
+	a.Equal(snitch.ErrOutboundIndex, err)
 }
 
 func Test_HandleLine(t *testing.T) {
@@ -135,9 +136,9 @@ func Test_HandleLine(t *testing.T) {
 		},
 	}
 
-	p, err := NewParser(NewNoopReader(nil), statsd.NoopClient{}, cfg)
+	p, err := snitch.NewParser(snitch.NewNoopReader(nil), statsd.NoopClient{}, cfg)
 	a.Nil(err)
-	h, ok := p.(*handler)
+	h, ok := p.(*snitch.Handler)
 	a.True(ok)
 	cases := []testCase{
 		{
@@ -150,14 +151,14 @@ func Test_HandleLine(t *testing.T) {
 		},
 		{
 			"[22/Sep/2017:01:56:40 +0300]	",
-			ErrOutboundIndex,
+			snitch.ErrOutboundIndex,
 		},
 	}
 
 	for i, tc := range cases {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			a := assert.New(t)
-			err := h.HandleLine(NewLine(tc.str, nil))
+			err := h.HandleLine(snitch.NewLine(tc.str, nil))
 			if tc.err != nil {
 				a.EqualError(tc.err, err.Error())
 			} else {
@@ -186,21 +187,21 @@ func Test_HandleLineError(t *testing.T) {
 		},
 	}
 
-	p, err := NewParser(NewNoopReader(nil), statsd.NoopClient{}, cfg)
+	p, err := snitch.NewParser(snitch.NewNoopReader(nil), statsd.NoopClient{}, cfg)
 	a.Nil(err)
-	h, ok := p.(*handler)
+	h, ok := p.(*snitch.Handler)
 	a.True(ok)
 	cases := []testCase{
 		{
 			"[22/Sep/2017:01:56:40 +0300]	200",
-			ErrOutboundIndex,
+			snitch.ErrOutboundIndex,
 		},
 	}
 
 	for i, tc := range cases {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			a := assert.New(t)
-			err := h.HandleLine(NewLine(tc.str, nil))
+			err := h.HandleLine(snitch.NewLine(tc.str, nil))
 			if tc.err != nil {
 				a.EqualError(tc.err, err.Error())
 			} else {

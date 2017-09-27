@@ -1,6 +1,7 @@
 package snitch
 
 import (
+	"errors"
 	"io"
 	"io/ioutil"
 	"log"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/hpcloud/tail"
 	"github.com/xjewer/snitch/lib/config"
-	"errors"
 )
 
 var (

@@ -1,31 +1,32 @@
-package snitch
+package snitch_test
 
 import (
 	"testing"
 
 	"github.com/quipo/statsd"
+	"github.com/xjewer/snitch"
 	"github.com/xjewer/snitch/lib/config"
 )
 
 func Benchmark_parser(b *testing.B) {
-	lines := make(chan *Line, 0)
-	reader := NewNoopReader(lines)
+	lines := make(chan *snitch.Line, 0)
+	reader := snitch.NewNoopReader(lines)
 	cfg := config.Source{
-		Name: "test",
+		Name:      "test",
 		Delimiter: "\t",
 		Keys: []config.Key{
 			{Key: "prefix.$3.$6", Count: true, Timing: "$4", Delimiter: ", "},
 		},
 	}
 
-	l := NewLine("[22/Sep/2017:01:56:40 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname", nil)
+	l := snitch.NewLine("[22/Sep/2017:01:56:40 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname", nil)
 
-	p, err := NewParser(reader, statsd.NoopClient{}, cfg)
+	p, err := snitch.NewParser(reader, statsd.NoopClient{}, cfg)
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	h, ok := p.(*handler)
+	h, ok := p.(*snitch.Handler)
 	if !ok {
 		b.Fatalf("wrong interface assertion")
 	}
@@ -39,4 +40,3 @@ func Benchmark_parser(b *testing.B) {
 	}
 	b.StopTimer()
 }
-

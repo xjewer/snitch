@@ -1,8 +1,10 @@
-package snitch
+package snitch_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/xjewer/snitch"
 )
 
 const (
@@ -12,7 +14,7 @@ const (
 
 func TestGetEntries(t *testing.T) {
 	a := assert.New(t)
-	tl := NewLine(TestLineOk, nil)
+	tl := snitch.NewLine(TestLineOk, nil)
 	tl.Split("\t")
 	result := tl.GetEntries()
 	a.Equal(11, len(result))
@@ -20,7 +22,7 @@ func TestGetEntries(t *testing.T) {
 
 func TestGetEntry(t *testing.T) {
 	a := assert.New(t)
-	tl := NewLine(TestLineOk, nil)
+	tl := snitch.NewLine(TestLineOk, nil)
 	tl.Split("\t")
 	result, err := tl.GetEntry(1)
 	a.Equal("200", result)
@@ -29,15 +31,15 @@ func TestGetEntry(t *testing.T) {
 
 func TestGetEntryError(t *testing.T) {
 	a := assert.New(t)
-	tl := NewLine(TestLineError, nil)
+	tl := snitch.NewLine(TestLineError, nil)
 	tl.Split("\t")
 	_, err := tl.GetEntry(20000)
-	a.Equal(ErrOutboundIndex, err)
+	a.Equal(snitch.ErrOutboundIndex, err)
 }
 
 func TestGetEntryError2(t *testing.T) {
 	a := assert.New(t)
-	tl := NewLine(TestLineOk, nil)
+	tl := snitch.NewLine(TestLineOk, nil)
 	_, err := tl.GetEntry(1)
-	a.Equal(ErrOutboundIndex, err)
+	a.Equal(snitch.ErrOutboundIndex, err)
 }

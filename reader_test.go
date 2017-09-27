@@ -1,4 +1,4 @@
-package snitch
+package snitch_test
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/xjewer/snitch"
 	"github.com/xjewer/snitch/lib/config"
 )
 
@@ -59,10 +60,10 @@ func checkResults(a *assert.Assertions, strs []string, offsetFile string) {
 		MustExists: true,
 	}
 
-	reader, err := NewFileReader(cfg)
+	reader, err := snitch.NewFileReader(cfg)
 	a.Nil(err)
 
-	lines := make(chan *Line)
+	lines := make(chan *snitch.Line)
 
 	wg.Add(1)
 	go func() {
@@ -78,7 +79,7 @@ func checkResults(a *assert.Assertions, strs []string, offsetFile string) {
 					fmt.Println("not ok")
 					return
 				}
-				a.Equal(e, l.text, "Strings should be equal")
+				a.Equal(e, l.GetText(), "Strings should be equal")
 			}
 		}
 	}

@@ -69,11 +69,11 @@ func (h *handler) HandleLine(l *Line) error {
 }
 
 // makeKeyFromPaths makes statsd key from keyPath
-// key path sets the order and type of each sequences
+// key keyPaths sets the order and type of each sequences
 func makeKeyFromPaths(l *Line, m *metric) (string, error) {
 	//todo use sync.Pool
 	var buffer bytes.Buffer
-	for i, k := range m.path {
+	for i, k := range m.keyPaths {
 		if i != 0 {
 			buffer.WriteString(".")
 		}
