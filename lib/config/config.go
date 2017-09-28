@@ -14,13 +14,16 @@ const (
 )
 
 var (
+	// ErrConfigFileMissing is a missing config file error
 	ErrConfigFileMissing = errors.New("config file is missing")
 )
 
+// Data is a main config structure
 type Data struct {
 	Sources []Source `yaml:"sources"`
 }
 
+// Source describes log parser
 type Source struct {
 	Name       string `yaml:"source"`
 	File       string `yaml:"file"`
@@ -34,6 +37,7 @@ type Source struct {
 	OffsetFile string `yaml:"offsetFile"`
 }
 
+// Key describes statsd keys and their metrics
 type Key struct {
 	Key       string `yaml:"key"`
 	Count     bool   `yaml:"count"`
@@ -41,6 +45,7 @@ type Key struct {
 	Delimiter string `yaml:"delimiter"`
 }
 
+// Parse parses config file
 func Parse(path string) (*Data, error) {
 	file, err := ioutil.ReadFile(path)
 	if err != nil {

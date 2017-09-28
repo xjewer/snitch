@@ -1,5 +1,12 @@
 ## Snitch
 
+[![Travis](https://img.shields.io/travis/xjewer/snitch.svg)](https://travis-ci.org/xjewer/snitch)
+[![Go Report Card](https://goreportcard.com/badge/github.com/xjewer/snitch)](https://goreportcard.com/report/github.com/xjewer/snitch)
+[![GitHub release](https://img.shields.io/github/release/xjewer/snitch.svg)](https://github.com/xjewer/snitch/releases)
+[![Docker Automated build](https://img.shields.io/docker/automated/xjewer/snitch.svg)](https://hub.docker.com/r/xjewer/snitch/)
+[![ImageLayers Layers](https://img.shields.io/imagelayers/layers/xjewer/snitch/latest.svg)](https://hub.docker.com/r/xjewer/snitch/)
+[![ImageLayers Size](https://img.shields.io/imagelayers/image-size/xjewer/snitch/latest.svg)](https://hub.docker.com/r/xjewer/snitch/)
+
 This tool allows to parse log files and send statistics to statsd endpoint
 
 ### Startup options
@@ -54,8 +61,10 @@ Snitch allows handle a few sources per instance
 
 ### Docker build
 
+Docker build uses [multistage build](https://docs.docker.com/engine/userguide/eng-image/multistage-build/)
+
 ```
-docker run --rm -v "$(pwd):/src" -v /var/run/docker.sock:/var/run/docker.sock -e MAIN_PATH=cmd/snitch xjewer/golang-builder:v1.9 xjewer/snitch:{tag}
+docker build -t xjewer/snitch:{tag} .
 ```
 
 
