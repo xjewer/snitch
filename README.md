@@ -54,8 +54,10 @@ Snitch allows handle a few sources per instance
 
 ### Docker build
 
+Docker build uses [multistage build](https://docs.docker.com/engine/userguide/eng-image/multistage-build/)
+
 ```
-docker run --rm -v "$(pwd):/src" -v /var/run/docker.sock:/var/run/docker.sock -e MAIN_PATH=cmd/snitch xjewer/golang-builder:v1.9 xjewer/snitch:{tag}
+docker build -t xjewer/snitch:{tag} .
 ```
 
 
