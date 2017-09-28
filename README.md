@@ -1,7 +1,11 @@
 ## Snitch
 
-[![Build Status](https://travis-ci.org/xjewer/snitch.svg?branch=master)](https://travis-ci.org/xjewer/snitch)
+[![Travis](https://img.shields.io/travis/xjewer/snitch.svg)](https://travis-ci.org/xjewer/snitch)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xjewer/snitch)](https://goreportcard.com/report/github.com/xjewer/snitch)
+[![GitHub release](https://img.shields.io/github/release/xjewer/snitch.svg)](https://github.com/xjewer/snitch/releases)
+[![Docker Automated build](https://img.shields.io/docker/automated/xjewer/snitch.svg)](https://hub.docker.com/r/xjewer/snitch/)
+[![ImageLayers Layers](https://img.shields.io/imagelayers/layers/xjewer/snitch/latest.svg)](https://hub.docker.com/r/xjewer/snitch/)
+[![ImageLayers Size](https://img.shields.io/imagelayers/image-size/xjewer/snitch/latest.svg)](https://hub.docker.com/r/xjewer/snitch/)
 
 This tool allows to parse log files and send statistics to statsd endpoint
 
