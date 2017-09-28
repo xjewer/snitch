@@ -1,5 +1,8 @@
 ## Snitch
 
+[![Build Status](https://travis-ci.org/xjewer/snitch.svg?branch=master)](https://travis-ci.org/xjewer/snitch)
+[![Go Report Card](https://goreportcard.com/badge/github.com/xjewer/snitch)](https://goreportcard.com/report/github.com/xjewer/snitch)
+
 This tool allows to parse log files and send statistics to statsd endpoint
 
 ### Startup options

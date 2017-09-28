@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	TestLineOk    = "[%s]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname"
-	TestLineError = "[%s]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname"
+	testLineOk    = "[%s]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname"
+	testLineError = "[%s]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname"
 )
 
 var (
@@ -56,17 +56,15 @@ func writeToFile() error {
 			f.Seek(0, 0)
 		case <-done:
 			ticker.Stop()
-			break
+			return nil
 		}
 	}
-
-	return nil
 }
 
 func getLogLine(f *os.File) {
 	if rand.Intn(2) == 0 {
-		fmt.Fprintf(f, TestLineOk+"\n", time.Now().Format("02/Jan/2006:15:04:05 -0700"))
+		fmt.Fprintf(f, testLineOk+"\n", time.Now().Format("02/Jan/2006:15:04:05 -0700"))
 	} else {
-		fmt.Fprintf(f, TestLineError+"\n", time.Now().Format("02/Jan/2006:15:04:05 -0700"))
+		fmt.Fprintf(f, testLineError+"\n", time.Now().Format("02/Jan/2006:15:04:05 -0700"))
 	}
 }
