@@ -1,6 +1,7 @@
 ## Snitch
 
 [![Travis](https://img.shields.io/travis/xjewer/snitch.svg)](https://travis-ci.org/xjewer/snitch)
+[![Coveralls](https://img.shields.io/coveralls/xjewer/snitch.svg)](https://coveralls.io/github/xjewer/snitch)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xjewer/snitch)](https://goreportcard.com/report/github.com/xjewer/snitch)
 [![GitHub release](https://img.shields.io/github/release/xjewer/snitch.svg)](https://github.com/xjewer/snitch/releases)
 [![Docker Automated build](https://img.shields.io/docker/automated/xjewer/snitch.svg)](https://hub.docker.com/r/xjewer/snitch/)
