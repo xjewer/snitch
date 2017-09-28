@@ -6,7 +6,7 @@ This tool allows to parse log files and send statistics to statsd endpoint
 
 * {string} `config` - configuration file
 * {string} `statsd` - statsd endpoint
-* {string} `prefix` - statsd global key prefix 
+* {string} `prefix` - statsd global key prefix, e.g. `balancer.` 
 * {int} `buffer` - buffer interval for metrics, `0` default: one metric - one request 
 
 ### Configuration file
@@ -39,7 +39,7 @@ where is:
 * {boolean} `noFollow` - means no follow new lines that are written in the log file, if true
 * {boolean} `mustExists` - log file have to be existed, if true
 * {boolean} `reOpen` - re-open file, if true (e.g. log rotation)
-* {string} `prefix` - statsd key prefix
+* {string} `prefix` - statsd key prefix, `%HOST%` is used as substitution a hostname
 * {string} `delimiter` - column delimiter in log files, it is reasonable to use `\t` delimiter in log files
 
 * {[]key} `keys` - list of keys, which would be send to statsd 

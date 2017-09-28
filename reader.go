@@ -64,12 +64,7 @@ func (r *fileReader) Close() error {
 	}
 	r.tail.Cleanup()
 	r.tail.Kill(ErrReaderIsFinished)
-	err := r.tail.Wait()
-	if err != ErrReaderIsFinished {
-		return err
-	}
-
-	return nil
+	return r.tail.Wait()
 }
 
 // openFile opens simplelog file to read its lines
@@ -116,7 +111,6 @@ func (r *fileReader) GetLines(lines chan<- *Line) {
 			}
 			lines <- NewLine(l.Text, l.Err)
 		case <-r.tail.Dying():
-			r.l.Println("dying")
 			return
 		}
 	}

@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	ErrProcessorStopped = errors.New("processor is stopped")
-	ErrEmptyVarName     = errors.New("empty var name")
+	ErrProcessorIsFinished = errors.New("processor is finished")
+	ErrEmptyVarName        = errors.New("empty var name")
 )
 
 // Parser parses log text from reader and sends statistics

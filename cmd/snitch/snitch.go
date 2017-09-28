@@ -22,7 +22,7 @@ var (
 
 	cfg             = flag.String("config", config.DefaultConfigPath, "config file name")
 	statsdEndpoint  = flag.String("statsd", "", "statsd endpoint")
-	statsdKeyPrefix = flag.String("prefix", "test", "statsd global key prefix")
+	statsdKeyPrefix = flag.String("prefix", "", "statsd global key prefix")
 	buffer          = flag.Int("buffer", 0, "statsd buffer interval")
 )
 

@@ -33,8 +33,8 @@ func Test_ProcessorRun(t *testing.T) {
 	}()
 
 	lines <- snitch.NewLine("test", nil)
-	a.Equal(snitch.ErrProcessorStopped, p.Close())
-	//a.Equal(0, len(lines))
+	a.Equal(snitch.ErrProcessorIsFinished, p.Close())
+	a.Equal(0, len(lines))
 	wg.Wait()
 	close(lines)
 }

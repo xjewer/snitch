@@ -1,13 +1,12 @@
 package stats
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/quipo/statsd"
 )
 
-// NewStatsd return new statsd client
+// NewStatsd return the new statsd client
 func NewStatsd(s string, prefix string, buffer int) statsd.Statsd {
 	if s == "" {
 		return statsd.NewStdoutClient("", prefix)
@@ -23,10 +22,10 @@ func NewStatsd(s string, prefix string, buffer int) statsd.Statsd {
 
 // SendTiming writes timings in milliseconds
 func SendTiming(s statsd.Statsd, key string, t int64) {
-	s.Timing(fmt.Sprintf("timings.%s", key), t)
+	s.Timing(key, t)
 }
 
 // SendEvent writes event types
 func SendEvent(s statsd.Statsd, key string) {
-	s.Incr(fmt.Sprintf("count.%s", key), 1)
+	s.Incr(key, 1)
 }

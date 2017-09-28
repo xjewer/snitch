@@ -28,7 +28,7 @@ func (p *Processor) Close() error {
 	if err != ErrReaderIsFinished {
 		p.l.Println(err)
 	}
-	p.Kill(ErrProcessorStopped)
+	p.Kill(ErrProcessorIsFinished)
 	return p.Wait()
 }
 
