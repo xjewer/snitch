@@ -118,12 +118,6 @@ func Test_GetElementAmount(t *testing.T) {
 }
 
 func Test_HandleLine(t *testing.T) {
-	type testCase struct {
-		str string
-		err error
-	}
-
-	a := assert.New(t)
 	cfg := config.Source{
 		Delimiter: "	",
 		Keys: []config.Key{
@@ -135,7 +129,31 @@ func Test_HandleLine(t *testing.T) {
 			},
 		},
 	}
+	runHandleLineTestcases(cfg, t)
+}
 
+func Test_HandleLine2(t *testing.T) {
+	cfg := config.Source{
+		Delimiter: "	",
+		Keys: []config.Key{
+			{
+				Key:    "$3.$6",
+				Count:  true,
+				Timing: "$4",
+			},
+		},
+	}
+
+	runHandleLineTestcases(cfg, t)
+}
+
+func runHandleLineTestcases(cfg config.Source, t *testing.T) {
+	type testCase struct {
+		str string
+		err error
+	}
+
+	a := assert.New(t)
 	p, err := snitch.NewParser(snitch.NewNoopReader(nil), statsd.NoopClient{}, cfg)
 	a.Nil(err)
 	h, ok := p.(*snitch.Handler)
@@ -160,9 +178,9 @@ func Test_HandleLine(t *testing.T) {
 			a := assert.New(t)
 			err := h.HandleLine(snitch.NewLine(tc.str, nil))
 			if tc.err != nil {
-				a.EqualError(tc.err, err.Error())
+				a.EqualError(tc.err, err.Error(), "Should be equal")
 			} else {
-				a.Nil(err)
+				a.Nil(err, "Should be nil error")
 			}
 		})
 	}
@@ -207,6 +225,35 @@ func Test_HandleLineError(t *testing.T) {
 			} else {
 				a.Nil(err)
 			}
+		})
+	}
+}
+
+func TestSubstitute(t *testing.T) {
+	type testCase struct {
+		str         string
+		expectation string
+	}
+	cases := []testCase{
+		{
+			"10.1.12.13",
+			"10_1_12_13",
+		},
+		{
+			"test",
+			"test",
+		},
+		{
+			"1.2.3.4.5.6.7.8.9",
+			"1_2_3_4_5_6_7_8_9",
+		},
+	}
+
+	for i, tc := range cases {
+		t.Run(fmt.Sprint(i), func(t *testing.T) {
+			a := assert.New(t)
+			result := snitch.SubstituteDots(tc.str)
+			a.EqualValues(tc.expectation, result)
 		})
 	}
 }
