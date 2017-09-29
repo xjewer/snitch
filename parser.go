@@ -82,7 +82,7 @@ func makeKeyFromPaths(l *Line, m *metric) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			buffer.WriteString(m)
+			buffer.WriteString(substituteDots(m))
 		} else {
 			buffer.WriteString(k.val)
 		}
@@ -99,7 +99,7 @@ func getElementString(l *Line, i int, sep string, last bool) (string, error) {
 		return "", err
 	}
 
-	if last {
+	if last && sep != "" {
 		return getLastMatch(c, sep), nil
 	}
 
@@ -132,6 +132,13 @@ func getAmount(s string, sep string) (float32, error) {
 	if s == "-" {
 		return result, ErrEmptyString
 	}
+	if sep == "" {
+		f, err := strconv.ParseFloat(s, 32)
+		if err != nil {
+			return result, err
+		}
+		return float32(f), nil
+	}
 
 	columns := strings.Split(s, sep)
 	for _, c := range columns {
@@ -148,4 +155,9 @@ func getAmount(s string, sep string) (float32, error) {
 		result += float32(f)
 	}
 	return result, nil
+}
+
+// substituteDots replaces dots in string
+func substituteDots(s string) string {
+	return strings.Replace(s, ".", "_", -1)
 }

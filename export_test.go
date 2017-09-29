@@ -57,3 +57,7 @@ func GetElementString(l *Line, i int, sep string, last bool) (string, error) {
 func GetLastMatch(s string, sep string) string {
 	return getLastMatch(s, sep)
 }
+
+func SubstituteDots(s string) string {
+	return substituteDots(s)
+}
