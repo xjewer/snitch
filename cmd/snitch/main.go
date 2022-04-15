@@ -1,4 +1,4 @@
-package main // import "github.com/xjewer/snitch/cmd/snitch"
+package main
 
 import (
 	"flag"
@@ -9,16 +9,16 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/Topface/snitch/internal"
+	"github.com/Topface/snitch/internal/lib/config"
+	"github.com/Topface/snitch/internal/lib/simplelog"
+	"github.com/Topface/snitch/internal/lib/stats"
 	"github.com/quipo/statsd"
-	"github.com/xjewer/snitch"
-	"github.com/xjewer/snitch/lib/config"
-	"github.com/xjewer/snitch/lib/simplelog"
-	"github.com/xjewer/snitch/lib/stats"
 )
 
 var (
 	wg         = sync.WaitGroup{}
-	processors = make([]*snitch.Processor, 0)
+	processors = make([]*internal.Processor, 0)
 
 	cfg             = flag.String("config", config.DefaultConfigPath, "config file name")
 	statsdEndpoint  = flag.String("statsd", "", "statsd endpoint")
@@ -62,19 +62,19 @@ func main() {
 // runProcessors run all processors
 func runProcessors(c *config.Data, s statsd.Statsd, l simplelog.Logger) {
 	for _, source := range c.Sources {
-		reader, err := snitch.NewFileReader(source, l)
+		reader, err := internal.NewFileReader(source, l)
 		if err != nil {
 			l.Println(err)
 			continue
 		}
 
-		parser, err := snitch.NewParser(reader, s, source)
+		parser, err := internal.NewParser(reader, s, source, l)
 		if err != nil {
 			l.Println(err)
 			continue
 		}
 
-		p := snitch.NewProcessor(parser, reader, l)
+		p := internal.NewProcessor(parser, reader, l)
 		processors = append(processors, p)
 		go p.Run()
 	}

@@ -273,7 +273,7 @@ func (tail *Tail) tailFileSync() {
 			if cooloff {
 				// Wait a second before seeking till the end of
 				// file when rate limit is reached.
-				msg := ("Too much simplelog activity; waiting a second " +
+				msg := ("Too much log activity; waiting a second " +
 					"before resuming tailing")
 				tail.Lines <- &Line{msg, time.Now(), errors.New(msg)}
 				select {
@@ -352,7 +352,7 @@ func (tail *Tail) waitForChanges() error {
 	case <-tail.changes.Deleted:
 		tail.changes = nil
 		if tail.ReOpen {
-			// XXX: we must not simplelog from a library.
+			// XXX: we must not log from a library.
 			tail.Logger.Printf("Re-opening moved/deleted file %s ...", tail.Filename)
 			if err := tail.reopen(); err != nil {
 				return err

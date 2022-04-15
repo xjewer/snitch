@@ -1,3 +1,4 @@
-/reader_test_offset*
+/internal/reader_test_offset*
 .idea/
 config.yml
+.snitch
