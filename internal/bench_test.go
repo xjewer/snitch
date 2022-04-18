@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Topface/snitch/internal/lib/config"
+	"github.com/Topface/snitch/internal/lib/simplelog"
 	"github.com/quipo/statsd"
 )
 
@@ -20,7 +21,8 @@ func Benchmark_parser(b *testing.B) {
 
 	l := NewLine("[22/Sep/2017:01:56:40 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname", nil)
 
-	p, err := NewParser(reader, statsd.NoopClient{}, cfg)
+	log := &simplelog.NoopLogger{}
+	p, err := NewParser(reader, statsd.NoopClient{}, cfg, log)
 	if err != nil {
 		b.Fatal(err)
 	}

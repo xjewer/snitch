@@ -162,6 +162,14 @@ func (l *Lifreq) GetLifruInt() int {
 	return *(*int)(unsafe.Pointer(&l.Lifru[0]))
 }
 
+func (l *Lifreq) SetLifruUint(d uint) {
+	*(*uint)(unsafe.Pointer(&l.Lifru[0])) = d
+}
+
+func (l *Lifreq) GetLifruUint() uint {
+	return *(*uint)(unsafe.Pointer(&l.Lifru[0]))
+}
+
 func IoctlLifreq(fd int, req uint, l *Lifreq) error {
 	return ioctl(fd, req, uintptr(unsafe.Pointer(l)))
 }
@@ -169,10 +177,4 @@ func IoctlLifreq(fd int, req uint, l *Lifreq) error {
 // Strioctl Helpers
 
 func (s *Strioctl) SetInt(i int) {
-	s.Len = int32(unsafe.Sizeof(i))
-	s.Dp = (*int8)(unsafe.Pointer(&i))
-}
-
-func IoctlSetStrioctlRetInt(fd int, req uint, s *Strioctl) (int, error) {
-	return ioctlRet(fd, req, uintptr(unsafe.Pointer(s)))
-}
+	s.Len = int32(unsafe.Sizeof

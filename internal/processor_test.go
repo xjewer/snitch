@@ -21,7 +21,8 @@ func Test_ProcessorRun(t *testing.T) {
 	}
 
 	l := &simplelog.NoopLogger{}
-	parser, err := NewParser(reader, statsd.NoopClient{}, cfg)
+	log := &simplelog.NoopLogger{}
+	parser, err := NewParser(reader, statsd.NoopClient{}, cfg, log)
 	a.Nil(err)
 	p := NewProcessor(parser, reader, l)
 

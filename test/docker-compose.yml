@@ -5,6 +5,7 @@ services:
     container_name: nginx-test
     volumes:
       - "./log:/var/log/nginx/"
-      - "./test.conf:/etc/nginx/conf.d/test.conf:ro"
+      - "./test.conf:/etc/nginx/conf.d/default.conf:ro"
+      - "./nginx.conf:/etc/nginx/nginx.conf:ro"
     ports:
       - "9130:80"

@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/Topface/snitch/internal/lib/config"
+	"github.com/Topface/snitch/internal/lib/simplelog"
 	"github.com/quipo/statsd"
 	"github.com/stretchr/testify/assert"
 )
@@ -153,7 +154,8 @@ func runHandleLineTestcases(cfg config.Source, t *testing.T) {
 	}
 
 	a := assert.New(t)
-	p, err := NewParser(NewNoopReader(nil), statsd.NoopClient{}, cfg)
+	log := &simplelog.NoopLogger{}
+	p, err := NewParser(NewNoopReader(nil), statsd.NoopClient{}, cfg, log)
 	a.Nil(err)
 	h, ok := p.(*Handler)
 	a.True(ok)
@@ -204,7 +206,8 @@ func Test_HandleLineError(t *testing.T) {
 		},
 	}
 
-	p, err := NewParser(NewNoopReader(nil), statsd.NoopClient{}, cfg)
+	log := &simplelog.NoopLogger{}
+	p, err := NewParser(NewNoopReader(nil), statsd.NoopClient{}, cfg, log)
 	a.Nil(err)
 	h, ok := p.(*Handler)
 	a.True(ok)
