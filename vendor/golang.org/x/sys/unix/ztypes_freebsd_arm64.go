@@ -31,8 +31,6 @@ type Timeval struct {
 	Usec int64
 }
 
-type Time_t int64
-
 type Rusage struct {
 	Utime    Timeval
 	Stime    Timeval
@@ -699,4 +697,6 @@ type Clockinfo struct {
 	Hz     int32
 	Tick   int32
 	Spare  int32
-	Stathz int
+	Stathz int32
+	Profhz int32
+}

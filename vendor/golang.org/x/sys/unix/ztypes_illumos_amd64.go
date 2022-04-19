@@ -13,8 +13,6 @@ const (
 	I_STR     = 0x5308
 	I_POP     = 0x5303
 	I_PUSH    = 0x5302
-	I_LINK    = 0x530c
-	I_UNLINK  = 0x530d
 	I_PLINK   = 0x5316
 	I_PUNLINK = 0x5317
 
@@ -36,4 +34,7 @@ type Strioctl struct {
 
 type Lifreq struct {
 	Name   [32]int8
-	Lifru1 [4]
+	Lifru1 [4]byte
+	Type   uint32
+	Lifru  [336]byte
+}

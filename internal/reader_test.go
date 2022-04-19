@@ -20,11 +20,11 @@ func Test_NewFileReaderWithZeroOffset(t *testing.T) {
 	a.Nil(err)
 
 	expectations := []string{
-		"[22/Sep/2017:01:56:25 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname\r",
-		"[22/Sep/2017:01:56:26 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname\r",
-		"[22/Sep/2017:01:56:39 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname\r",
-		"[22/Sep/2017:01:56:27 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname\r",
-		"[22/Sep/2017:01:56:40 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname\r",
+		"[22/Sep/2017:01:56:25 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname",
+		"[22/Sep/2017:01:56:26 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname",
+		"[22/Sep/2017:01:56:39 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname",
+		"[22/Sep/2017:01:56:27 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname",
+		"[22/Sep/2017:01:56:40 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname",
 	}
 
 	checkResults(a, expectations, offsetFile)
@@ -35,14 +35,14 @@ func Test_NewFileReaderWithOffset(t *testing.T) {
 	const offsetFile = "./reader_test_offset2"
 
 	// starts with second line
-	err := cleanupOffsetFile(offsetFile, 126)
+	err := cleanupOffsetFile(offsetFile, 125)
 	a.Nil(err)
 
 	expectations := []string{
-		"[22/Sep/2017:01:56:26 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname\r",
-		"[22/Sep/2017:01:56:39 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname\r",
-		"[22/Sep/2017:01:56:27 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname\r",
-		"[22/Sep/2017:01:56:40 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname\r",
+		"[22/Sep/2017:01:56:26 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname",
+		"[22/Sep/2017:01:56:39 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname",
+		"[22/Sep/2017:01:56:27 +0300]	200	192.168.1.1:80 : 127.0.0.1:8000	504 : 200	0.7 : 0.002	https	POST	/test	/test	Error	hostname",
+		"[22/Sep/2017:01:56:40 +0300]	200	192.168.1.1:80	200	0.036	https	POST	/test	/test	OK	hostname",
 	}
 
 	checkResults(a, expectations, offsetFile)
